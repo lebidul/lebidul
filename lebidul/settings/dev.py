@@ -55,3 +55,8 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+GOOGLE_CREDENTIALS_PATH = 'credentials/service-account.json'
+GOOGLE_SHEETS_FOLDER_ID = '1DQmOAD82R9WQ_qxzDO5EM2zPxiV0eOQK'
+MAKE_WEBHOOK_URL = ''
+DEFAULT_FROM_EMAIL = 'formulaire@lebidul.com'

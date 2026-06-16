@@ -12,6 +12,7 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 urlpatterns = [
+    path('', include('apps.agenda.urls')),
     # Django admin (backup, prefer Wagtail)
     path("django-admin/", admin.site.urls),
 
@@ -33,6 +34,7 @@ if settings.DEBUG:
 
     try:
         import debug_toolbar
-        urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+        urlpatterns = [
+    path('', include('apps.agenda.urls')),path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
     except ImportError:
         pass
