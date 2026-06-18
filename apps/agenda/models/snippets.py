@@ -331,3 +331,27 @@ class Auteur(models.Model):
         if not self.slug:
             self.slug = slugify(self.nom)
         super().save(*args, **kwargs)
+
+
+class GoogleSheetMensuel(models.Model):
+    """URL d un Google Sheet de tapage par mois."""
+    annee = models.PositiveIntegerField(verbose_name="Annee")
+    mois = models.PositiveIntegerField(verbose_name="Mois (1-12)")
+    url = models.URLField(max_length=500, verbose_name="URL du Google Sheet")
+
+    panels = [
+        FieldRowPanel([
+            FieldPanel("annee"),
+            FieldPanel("mois"),
+        ]),
+        FieldPanel("url"),
+    ]
+
+    class Meta:
+        verbose_name = "Google Sheet mensuel"
+        verbose_name_plural = "Google Sheets mensuels"
+        ordering = ["-annee", "-mois"]
+        unique_together = [("annee", "mois")]
+
+    def __str__(self):
+        return f"Sheet {self.annee}/{self.mois:02d}"
