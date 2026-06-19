@@ -1,9 +1,7 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load wagtailcore_tags wagtailimages_tags %}
-
 {% block content %}
 <div class="biduls-index">
-
     <header class="biduls-hero">
         <div class="container">
             <div class="breadcrumb">
@@ -15,7 +13,6 @@
             <p class="biduls-hero__sub">Tous les numeros publies depuis fevrier 1997.<br>L agenda culturel du Mans, mois apres mois.</p>
         </div>
     </header>
-
     <div class="container">
         <nav class="year-pills" id="yearPills">
             <button class="year-pill year-pill--active" data-year="all">Tous</button>
@@ -25,13 +22,12 @@
             {% endfor %}
         </nav>
     </div>
-
     <div class="container">
         <div class="biduls-gallery" id="bidulsGallery">
             {% for bidul_page in biduls %}
             <article class="bcard" data-year="{{ bidul_page.bidul.annee }}">
-                <a href="{% pageurl bidul_page %}" class="bcard__link">
-                    <div class="bcard__cover">
+                <div class="bcard__link">
+                    <div class="bcard__cover" onclick="openLightbox(this.querySelector('img') ? this.querySelector('img').src : '', 'Bidul n°{{ bidul_page.bidul.numero }}')">
                         {% if bidul_page.couverture %}
                             {% image bidul_page.couverture fill-400x560 as couv %}
                             <img src="{{ couv.url }}" alt="Bidul n{{ bidul_page.bidul.numero }}" loading="lazy">
@@ -45,18 +41,45 @@
                         <span class="bcard__num">N{{ bidul_page.bidul.numero }}</span>
                         <span class="bcard__date">{{ bidul_page.bidul.date_publication|date:"F Y"|title }}</span>
                     </div>
-                </a>
+                </div>
+                <a href="{% pageurl bidul_page %}" class="bcard__open-link">Ouvrir la page →</a>
             </article>
             {% empty %}
             <p class="no-results">Aucun numero pour le moment.</p>
             {% endfor %}
         </div>
     </div>
-
 </div>
+
+{# Lightbox #}
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <button class="lightbox__close" onclick="closeLightbox()">&times;</button>
+    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+    <p id="lightbox-caption" class="lightbox__caption"></p>
+</div>
+
+<style>
+.bcard__open-link{display:block;text-align:center;font-size:.72rem;color:#666;margin-top:6px;text-decoration:none}
+.bcard__open-link:hover{color:#0D0D0D;text-decoration:underline}
+</style>
 
 {% block extra_js %}
 <script>
+function openLightbox(url, caption) {
+    if (!url) return;
+    document.getElementById('lightbox-img').src = url;
+    document.getElementById('lightbox-caption').textContent = caption;
+    document.getElementById('lightbox').classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('is-open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     var pills = document.querySelectorAll('.year-pill');
     var cards = document.querySelectorAll('.bcard');

@@ -12,14 +12,22 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <header class="page-header">
-        <h1 class="page-header__title">{{ page.title }}</h1>
+<header class="page-hero-fanzine">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Accueil</a>
+            <span class="breadcrumb__sep">&rsaquo;</span>
+            <span>Lieux</span>
+        </div>
+        <h1 class="page-hero-fanzine__title">{{ page.title }}</h1>
         {% if page.introduction %}
-        <p class="page-header__intro">{{ page.introduction }}</p>
+        <p class="page-hero-fanzine__sub">{{ page.introduction }}</p>
         {% endif %}
-    </header>
-    
+    </div>
+</header>
+
+<div class="container">
+
     {# Vue toggle : Liste / Carte #}
     <div class="view-toggle">
         <button class="view-toggle__btn view-toggle__btn--active" data-view="list">
@@ -42,7 +50,7 @@
             Carte
         </button>
     </div>
-    
+
     {# Filtre par ville #}
     <div class="filters">
         <label for="ville-filter">Filtrer par ville :</label>
@@ -54,7 +62,7 @@
             {% endfor %}
         </select>
     </div>
-    
+
     {# Vue Liste #}
     <div class="lieux-view lieux-view--list" id="view-list">
         <div class="lieux-grid">
@@ -88,7 +96,7 @@
             {% endfor %}
         </div>
     </div>
-    
+
     {# Vue Carte #}
     <div class="lieux-view lieux-view--map" id="view-map" style="display: none;">
         <div id="map-lieux" class="map-container"></div>
@@ -99,27 +107,19 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 <script>
-// Toggle vue Liste/Carte
 document.querySelectorAll('.view-toggle__btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const view = this.dataset.view;
-        
-        // Toggle boutons
         document.querySelectorAll('.view-toggle__btn').forEach(b => b.classList.remove('view-toggle__btn--active'));
         this.classList.add('view-toggle__btn--active');
-        
-        // Toggle vues
         document.getElementById('view-list').style.display = view === 'list' ? '' : 'none';
         document.getElementById('view-map').style.display = view === 'map' ? '' : 'none';
-        
-        // Init carte si première fois
         if (view === 'map' && !window.mapInitialized) {
             initMap();
         }
     });
 });
 
-// Filtre par ville
 function filterByVille(ville) {
     document.querySelectorAll('.lieu-card').forEach(card => {
         if (!ville || card.dataset.ville === ville) {
@@ -130,17 +130,12 @@ function filterByVille(ville) {
     });
 }
 
-// Initialisation de la carte
 function initMap() {
-    const map = L.map('map-lieux').setView([47.9960, 0.1926], 12); // Le Mans
-    
+    const map = L.map('map-lieux').setView([47.9960, 0.1926], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
-    
     const markers = L.markerClusterGroup();
-    
-    // Charger les lieux via API
     fetch('/api/lieux/geojson/')
         .then(response => response.json())
         .then(data => {
@@ -154,14 +149,11 @@ function initMap() {
                     `);
                 }
             }).addTo(markers);
-            
             map.addLayer(markers);
-            
             if (data.features.length > 0) {
                 map.fitBounds(markers.getBounds(), { padding: [20, 20] });
             }
         });
-    
     window.mapInitialized = true;
 }
 </script>
